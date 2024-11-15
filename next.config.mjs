@@ -2,7 +2,7 @@
 const nextConfig = {
     distDir: 'out',
     output: 'export',
-    pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+    pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
 };
 
 export default nextConfig;
