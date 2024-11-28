@@ -5,7 +5,6 @@ const nextConfig = {
     images: {
         unoptimized: true,
     },
-    pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
 };
 
 export default nextConfig;

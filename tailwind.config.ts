@@ -15,6 +15,15 @@ const config: Config = {
   			fontFamily: {
   				sans: ["Times New Roman", "serif"],
   			},
+  			keyframes: {
+  				scroll: {
+  					'0%': { transform: 'translateY(0)' },
+  					'100%': { transform: 'translateY(-50%)' },
+  				}
+  			},
+  			animation: {
+  				scroll: 'scroll 20s linear infinite',
+  			}
   		}
   },
   plugins: [],

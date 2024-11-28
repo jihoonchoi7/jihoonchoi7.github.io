@@ -17,6 +17,11 @@ const socialLinks = [
     name: 'LinkedIn',
     url: 'https://www.linkedin.com/in/jihoon-choi7/',
   },
+  {
+    name: 'Projects',
+    url: '/projects',
+    internal: true,
+  },
 ];
 
 export function SocialButtons() {
@@ -26,8 +31,8 @@ export function SocialButtons() {
         <Link
           key={link.name}
           href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
+          target={link.internal ? undefined : "_blank"}
+          rel={link.internal ? undefined : "noopener noreferrer"}
           className="inline-flex items-center justify-center h-[30px] w-[80px] border border-black text-sm transition-colors duration-200 ease-in-out hover:bg-black hover:text-white font-['Times_New_Roman']"
         >
           {link.name}
