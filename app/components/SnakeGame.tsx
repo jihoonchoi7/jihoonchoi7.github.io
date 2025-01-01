@@ -1,198 +1,179 @@
-'use client';
-import { useEffect, useState, useCallback } from 'react';
+"use client"
 
-type Position = {
-  x: number;
-  y: number;
-};
+import React, { useRef, useEffect } from 'react';
+import { useSnakeGame } from '../lib/snake/useSnakeGame';
+import { CANVAS_SIZE, CELL_SIZE, drawGrid } from '../lib/snake/utils';
 
 export function SnakeGame() {
-  const [snake, setSnake] = useState<Position[]>([{ x: 10, y: 10 }]);
-  const [food, setFood] = useState<Position>({ x: 5, y: 5 });
-  const [direction, setDirection] = useState<string>('right');
-  const [gameOver, setGameOver] = useState<boolean>(false);
-  const [score, setScore] = useState<number>(0);
-  const [highScore, setHighScore] = useState<number>(0);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-  const [moveQueue, setMoveQueue] = useState<string[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { gameState, moveSnake, resetGame, particles, setParticles } = useSnakeGame();
 
-  const gridSize = 15;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-  const generateFood = useCallback(() => {
-    const newFood = {
-      x: Math.floor(Math.random() * (gridSize - 1)),
-      y: Math.floor(Math.random() * (gridSize - 1))
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+
+    const gameLoop = () => {
+      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+      // Draw background
+      ctx.fillStyle = 'rgba(0, 0, 20, 0.8)';
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+      // Draw grid
+      drawGrid(ctx);
+
+      // Draw food
+      ctx.fillStyle = '#ff0000';
+      ctx.beginPath();
+      ctx.arc(
+        gameState.food.x * CELL_SIZE + CELL_SIZE / 2,
+        gameState.food.y * CELL_SIZE + CELL_SIZE / 2,
+        CELL_SIZE / 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+
+      // Draw snake
+      ctx.fillStyle = '#00ff00';
+      gameState.snake.forEach((segment, index) => {
+        const gradient = ctx.createRadialGradient(
+          segment.x * CELL_SIZE + CELL_SIZE / 2,
+          segment.y * CELL_SIZE + CELL_SIZE / 2,
+          0,
+          segment.x * CELL_SIZE + CELL_SIZE / 2,
+          segment.y * CELL_SIZE + CELL_SIZE / 2,
+          CELL_SIZE / 2
+        );
+        gradient.addColorStop(0, '#00ff00');
+        gradient.addColorStop(1, '#008000');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(segment.x * CELL_SIZE, segment.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+
+        if (index === 0) {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(
+            segment.x * CELL_SIZE + CELL_SIZE * 0.3,
+            segment.y * CELL_SIZE + CELL_SIZE * 0.3,
+            CELL_SIZE * 0.15,
+            0,
+            Math.PI * 2
+          );
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(
+            segment.x * CELL_SIZE + CELL_SIZE * 0.7,
+            segment.y * CELL_SIZE + CELL_SIZE * 0.3,
+            CELL_SIZE * 0.15,
+            0,
+            Math.PI * 2
+          );
+          ctx.fill();
+        }
+      });
+
+      // Draw particles
+      particles.forEach((particle, index) => {
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `${particle.color}${Math.floor(particle.alpha * 255).toString(16).padStart(2, '0')}`;
+        ctx.fill();
+      });
+
+      // Draw score
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(0, 0, CANVAS_SIZE, 40);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`Score: ${gameState.score}`, 20, 20);
+
+      if (gameState.gameOver) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 40, CANVAS_SIZE, CANVAS_SIZE - 40);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 32px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Game Over', CANVAS_SIZE / 2, CANVAS_SIZE / 2 - 40);
+        ctx.font = '20px Arial';
+        ctx.fillText(`Final Score: ${gameState.score}`, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+        ctx.fillText('Press Space to Restart', CANVAS_SIZE / 2, CANVAS_SIZE / 2 + 40);
+      }
+
+      animationFrameId = requestAnimationFrame(gameLoop);
     };
-    return newFood;
-  }, []);
 
-  useEffect(() => {
-    const savedHighScore = localStorage.getItem('snakeHighScore');
-    if (savedHighScore) {
-      setHighScore(parseInt(savedHighScore));
-    }
-  }, []);
+    gameLoop();
 
-  useEffect(() => {
-    if (score > highScore) {
-      setHighScore(score);
-      localStorage.setItem('snakeHighScore', score.toString());
-    }
-  }, [score, highScore]);
-
-  const resetGame = () => {
-    setSnake([{ x: 10, y: 10 }]);
-    setFood(generateFood());
-    setDirection('right');
-    setGameOver(false);
-    setScore(0);
-    setIsPlaying(true);
-    setIsPaused(false);
-  };
-
-  const togglePause = () => {
-    setIsPaused(!isPaused);
-  };
-
-  const handleDirectionChange = (newDirection: string) => {
-    setMoveQueue(prev => {
-      const lastMove = prev[prev.length - 1] || direction;
-      if (
-        (newDirection === 'up' && lastMove !== 'down') ||
-        (newDirection === 'down' && lastMove !== 'up') ||
-        (newDirection === 'left' && lastMove !== 'right') ||
-        (newDirection === 'right' && lastMove !== 'left')
-      ) {
-        return [...prev, newDirection].slice(-2);
-      }
-      return prev;
-    });
-  };
-
-  const moveSnake = useCallback(() => {
-    if (gameOver || !isPlaying || isPaused) return;
-
-    setSnake((prevSnake) => {
-      const newSnake = [...prevSnake];
-      const head = { ...newSnake[0] };
-
-      let currentDirection = direction;
-      if (moveQueue.length > 0) {
-        currentDirection = moveQueue[0];
-        setMoveQueue(prev => prev.slice(1));
-        setDirection(currentDirection);
-      }
-
-      switch (currentDirection) {
-        case 'up': head.y -= 1; break;
-        case 'down': head.y += 1; break;
-        case 'left': head.x -= 1; break;
-        case 'right': head.x += 1; break;
-      }
-
-      if (head.x < 0 || head.x >= gridSize || head.y < 0 || head.y >= gridSize) {
-        setGameOver(true);
-        return prevSnake;
-      }
-
-      if (newSnake.some(segment => segment.x === head.x && segment.y === head.y)) {
-        setGameOver(true);
-        return prevSnake;
-      }
-
-      newSnake.unshift(head);
-
-      if (head.x === food.x && head.y === food.y) {
-        setFood(generateFood());
-        setScore(prev => prev + 1);
-      } else {
-        newSnake.pop();
-      }
-
-      return newSnake;
-    });
-  }, [direction, food, gameOver, generateFood, isPlaying, isPaused, moveQueue]);
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [gameState, particles]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-        e.preventDefault();
-        
-        switch (e.key) {
-          case 'ArrowUp': handleDirectionChange('up'); break;
-          case 'ArrowDown': handleDirectionChange('down'); break;
-          case 'ArrowLeft': handleDirectionChange('left'); break;
-          case 'ArrowRight': handleDirectionChange('right'); break;
-        }
+      if (e.code === 'Space' && gameState.gameOver) {
+        resetGame();
       }
-      if (e.key === ' ') togglePause();
     };
 
-    document.addEventListener('keydown', handleKeyPress);
-    const gameInterval = setInterval(moveSnake, 180);
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [gameState.gameOver, resetGame]);
 
+  useEffect(() => {
+    if (!gameState.gameOver) {
+      const gameInterval = setInterval(() => {
+        moveSnake();
+        setParticles(prevParticles => 
+          prevParticles
+            .map(particle => ({
+              ...particle,
+              x: particle.x + particle.velocity.x,
+              y: particle.y + particle.velocity.y,
+              alpha: particle.alpha - 0.02
+            }))
+            .filter(particle => particle.alpha > 0)
+        );
+      }, 100);
+
+      return () => clearInterval(gameInterval);
+    }
+  }, [gameState.gameOver, moveSnake]);
+
+  useEffect(() => {
+    const preventDefault = (e: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    window.addEventListener('keydown', preventDefault, { passive: false });
+    
     return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-      clearInterval(gameInterval);
+      window.removeEventListener('keydown', preventDefault);
     };
-  }, [moveSnake]);
+  }, []);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="flex justify-between w-full mb-4">
-        <div className="text-lg font-['Times_New_Roman']">
-          Score: {score} | High Score: {highScore}
-        </div>
-        <button
-          onClick={resetGame}
-          className="px-4 py-2 border border-black hover:bg-black hover:text-white transition-colors font-['Times_New_Roman']"
-        >
-          {isPlaying ? 'Restart' : 'Start Game'}
-        </button>
-      </div>
-      <div 
-        className="border-2 border-black"
-        style={{
-          width: `${gridSize * 20}px`,
-          height: `${gridSize * 20}px`,
-          position: 'relative',
-          backgroundColor: '#f6f9fc'
-        }}
-      >
-        {snake.map((segment, index) => (
-          <div
-            key={index}
-            className="bg-black absolute"
-            style={{
-              width: '18px',
-              height: '18px',
-              left: `${segment.x * 20 + 1}px`,
-              top: `${segment.y * 20 + 1}px`,
-            }}
-          />
-        ))}
-        <div
-          className="bg-red-500 absolute"
-          style={{
-            width: '18px',
-            height: '18px',
-            left: `${food.x * 20 + 1}px`,
-            top: `${food.y * 20 + 1}px`,
-          }}
-        />
-      </div>
-      <div className="flex gap-4">
-        <button
-          onClick={togglePause}
-          className="px-4 py-2 border border-black hover:bg-black hover:text-white transition-colors font-['Times_New_Roman']"
-        >
-          {isPaused ? 'Resume' : 'Pause'}
-        </button>
-      </div>
-      {gameOver && (
-        <div className="text-lg font-bold text-red-500 font-['Times_New_Roman']">Game Over!</div>
-      )}
+    <div className="flex flex-col items-center justify-center">
+      <canvas
+        ref={canvasRef}
+        width={CANVAS_SIZE}
+        height={CANVAS_SIZE}
+        className="border-4 border-blue-500 rounded-lg shadow-lg"
+      />
+      <p className="mt-4 text-text text-lg">Use arrow keys to control the snake</p>
     </div>
   );
-} 
+}
+

@@ -6,7 +6,7 @@ export default function Home() {
     <main className="font-sans min-h-screen bg-background relative">
       <div className="background-pattern" />
       <InfiniteScroll />
-      <div className="max-w-4xl pl-6 py-8 relative z-10">
+      <div className="max-w-4xl pl-6 py-12 relative z-10">
         {/* Header */}
         <header>
           <h1 className="text-3xl font-bold text-text">Jihoon Choi</h1>
