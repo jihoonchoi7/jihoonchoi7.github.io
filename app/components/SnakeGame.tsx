@@ -79,7 +79,7 @@ export function SnakeGame() {
       });
 
       // Draw particles
-      particles.forEach((particle, index) => {
+      particles.forEach(particle => {
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
         ctx.fillStyle = `${particle.color}${Math.floor(particle.alpha * 255).toString(16).padStart(2, '0')}`;
@@ -147,7 +147,7 @@ export function SnakeGame() {
 
       return () => clearInterval(gameInterval);
     }
-  }, [gameState.gameOver, moveSnake]);
+  }, [gameState.gameOver, moveSnake, setParticles]);
 
   useEffect(() => {
     const preventDefault = (e: KeyboardEvent) => {
