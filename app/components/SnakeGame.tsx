@@ -86,18 +86,9 @@ export function SnakeGame() {
         ctx.fill();
       });
 
-      // Draw score
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-      ctx.fillRect(0, 0, CANVAS_SIZE, 40);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px Arial';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`Score: ${gameState.score}`, 20, 20);
-
       if (gameState.gameOver) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(0, 40, CANVAS_SIZE, CANVAS_SIZE - 40);
+        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE); // Fill entire canvas
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 32px Arial';
         ctx.textAlign = 'center';
@@ -166,13 +157,20 @@ export function SnakeGame() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <canvas
-        ref={canvasRef}
-        width={CANVAS_SIZE}
-        height={CANVAS_SIZE}
-        className="border-4 border-blue-500 rounded-lg shadow-lg"
-      />
-      <p className="mt-4 text-text text-lg">Use arrow keys to control the snake</p>
+      <div className="mb-4 text-xl font-bold">
+        Score: {gameState.score}
+      </div>
+      <div className="relative mb-16">
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_SIZE}
+          height={CANVAS_SIZE}
+          className="border-4 border-blue-500 rounded-lg shadow-lg"
+        />
+        <div className="absolute -bottom-8 w-full text-center">
+          <p className="text-text text-lg">Use arrow keys to control the snake</p>
+        </div>
+      </div>
     </div>
   );
 }
