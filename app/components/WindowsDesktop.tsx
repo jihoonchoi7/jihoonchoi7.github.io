@@ -70,13 +70,13 @@ export function WindowsDesktop() {
   const [dragType, setDragType] = useState<'tab' | 'window' | null>(null);
 
 
-  const createNewWindow = (initialTabs: Tab[] = [], x = 200, y = 100) => {
+  const createNewWindow = useCallback((initialTabs: Tab[] = [], x = 200, y = 100) => {
     const newWindow: BrowserWindow = {
       id: `window-${Date.now()}`,
       tabs: initialTabs.length > 0 ? initialTabs : [{
         id: `tab-${Date.now()}`,
         title: 'New Tab',
-        content: <div className="p-4">What's up?</div>
+        content: <div className="p-4">What&apos;s up?</div>
       }],
       activeTabId: initialTabs[0]?.id || `tab-${Date.now()}`,
       x,
@@ -90,13 +90,13 @@ export function WindowsDesktop() {
     setHighestZIndex(prev => prev + 1);
     setBrowserWindows(prev => [...prev, newWindow]);
     return newWindow;
-  };
+  }, [highestZIndex]);
 
   const createNewTab = (windowId: string) => {
     const newTab: Tab = {
       id: `tab-${Date.now()}`,
       title: `New Tab`,
-      content: <div className="p-4">What's up?</div>
+      content: <div className="p-4">What&apos;s up?</div>
     };
     
     setBrowserWindows(prev => prev.map(window => {
@@ -151,25 +151,25 @@ export function WindowsDesktop() {
     ));
   };
 
-  const bringWindowToFront = (windowId: string) => {
+  const bringWindowToFront = useCallback((windowId: string) => {
     const newZIndex = highestZIndex + 1;
     setHighestZIndex(newZIndex);
     setBrowserWindows(prev => prev.map(window => 
       window.id === windowId ? { ...window, zIndex: newZIndex } : window
     ));
-  };
+  }, [highestZIndex]);
 
-  const bringBioToFront = () => {
+  const bringBioToFront = useCallback(() => {
     const newZIndex = highestZIndex + 1;
     setHighestZIndex(newZIndex);
     setBioWindow(prev => ({ ...prev, zIndex: newZIndex }));
-  };
+  }, [highestZIndex]);
 
-  const bringContactToFront = () => {
+  const bringContactToFront = useCallback(() => {
     const newZIndex = highestZIndex + 1;
     setHighestZIndex(newZIndex);
     setContactWindow(prev => ({ ...prev, zIndex: newZIndex }));
-  };
+  }, [highestZIndex]);
 
   const handleIconMouseDown = useCallback((e: React.MouseEvent, iconId: string) => {
     e.preventDefault();
@@ -296,27 +296,7 @@ export function WindowsDesktop() {
     }
   }, [draggedWindow]);
 
-  // Tab drag handlers
-  const handleTabMouseDown = useCallback((e: React.MouseEvent, tabId: string, windowId: string) => {
-    // Don't interfere with close button clicks
-    if ((e.target as HTMLElement).closest('.tab-close')) {
-      return;
-    }
-    
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('Tab mouse down:', tabId, 'from window:', windowId);
-    const rect = e.currentTarget.getBoundingClientRect();
-    setDraggedTab(tabId);
-    setDraggedTabFromWindow(windowId);
-    setDragType('tab');
-    setIsDragging(false);
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
-    bringWindowToFront(windowId);
-  }, [bringWindowToFront]);
+  // Tab drag handlers - removed unused function
 
   const handleTabMouseMove = useCallback((e: MouseEvent) => {
     if (draggedTab && dragType === 'tab') {
@@ -717,7 +697,7 @@ export function WindowsDesktop() {
           
           {/* Tab Bar */}
           <div className="tab-bar">
-            {browserWindow.tabs.map((tab, index) => (
+            {browserWindow.tabs.map((tab) => (
               <div
                 key={tab.id}
                 data-tab-id={tab.id}
@@ -799,7 +779,7 @@ export function WindowsDesktop() {
               </p>
               
               <p><strong>🎯 Current Focus</strong><br />
-              I'm just tyring to understand what AI Code Reviews are...</p>
+              I&apos;m just tyring to understand what AI Code Reviews are...</p>
             </div>
           </div>
         </div>
@@ -848,7 +828,7 @@ export function WindowsDesktop() {
               Feel free to connect with me on any of the platforms linked on the homepage!</p>
               
               <p><strong>📍 Location:</strong><br />
-              I'm currenlty based in SF. North Beach area!<br />
+              I&apos;m currenlty based in SF. North Beach area!<br />
               </p>
               
               <p><strong>💼 Professional:</strong><br />
