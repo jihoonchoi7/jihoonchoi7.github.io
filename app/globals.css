@@ -3,15 +3,293 @@
 @tailwind utilities;
 
 :root {
-  --background: #f6f9fc;
-  --text: #000000;
+  --windows-blue: #008080;
+  --windows-gray: #c0c0c0;
+  --windows-dark-gray: #808080;
+  --windows-light-gray: #dfdfdf;
+  --windows-text: #000000;
+  --windows-green: #008000;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--text);
+  margin: 0;
+  padding: 0;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+  overflow: hidden;
+  background: linear-gradient(
+    to bottom,
+    #87ceeb 0%,
+    #b0e0e6 40%,
+    #98fb98 60%,
+    #90ee90 70%,
+    #32cd32 85%,
+    #228b22 100%
+  );
+  height: 100vh;
   position: relative;
-  min-height: 300vh;
+}
+
+/* Windows 95 Style Components */
+.window {
+  background: var(--windows-gray);
+  border: 2px outset var(--windows-gray);
+  box-shadow: 1px 1px 0px #000000;
+}
+
+.window-header {
+  background: linear-gradient(90deg, #0000ff 0%, #000080 100%);
+  color: white;
+  padding: 2px 4px;
+  font-weight: bold;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.button-95 {
+  background: var(--windows-gray);
+  border: 2px outset var(--windows-gray);
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.button-95:hover {
+  background: var(--windows-light-gray);
+}
+
+.button-95:active {
+  border: 2px inset var(--windows-gray);
+}
+
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: var(--windows-gray);
+  border-top: 2px outset var(--windows-gray);
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  z-index: 1000;
+}
+
+.start-button {
+  background: var(--windows-gray);
+  border: 2px outset var(--windows-gray);
+  padding: 4px 8px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.start-button:active {
+  border: 2px inset var(--windows-gray);
+}
+
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 64px;
+  padding: 4px;
+  cursor: pointer;
+  user-select: none;
+  position: absolute;
+}
+
+.desktop-icon:hover {
+  background: rgba(0, 0, 255, 0.3);
+}
+
+.desktop-icon img,
+.desktop-icon .icon-placeholder {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
+}
+
+.icon-placeholder {
+  background: var(--windows-gray);
+  border: 2px outset var(--windows-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.desktop-icon span {
+  color: white;
+  font-size: 11px;
+  text-shadow: 1px 1px 0px #000000;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.tab-bar {
+  background: var(--windows-gray);
+  border-bottom: 2px inset var(--windows-gray);
+  display: flex;
+  padding: 2px;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.tab {
+  background: var(--windows-gray);
+  border: 2px outset var(--windows-gray);
+  padding: 4px 12px;
+  margin-right: 2px;
+  cursor: pointer;
+  font-size: 11px;
+  border-bottom: none;
+}
+
+.tab.active {
+  background: white;
+  border-bottom: 2px solid white;
+  position: relative;
+  z-index: 1;
+}
+
+.tab:hover {
+  background: #f0f0f0;
+}
+
+.tab-title {
+  user-select: none;
+  pointer-events: none;
+}
+
+.tab-close {
+  user-select: none;
+}
+
+.browser-window {
+  transition: box-shadow 0.2s ease;
+}
+
+.browser-window:hover {
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.browser-window.drag-target {
+  box-shadow: 0 0 10px #0066cc;
+  border: 2px solid #0066cc;
+}
+
+.new-tab-button {
+  background: var(--windows-gray);
+  border: 2px outset var(--windows-gray);
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 2px;
+  font-size: 11px;
+  border-bottom: none;
+}
+
+.bio-window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  max-height: 500px;
+  z-index: 100;
+}
+
+.bio-content {
+  background: white;
+  padding: 16px;
+  font-size: 11px;
+  line-height: 1.4;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 2px inset var(--windows-gray);
+}
+
+.close-button {
+  background: var(--windows-gray);
+  border: 2px outset var(--windows-gray);
+  width: 16px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.close-button:active {
+  border: 2px inset var(--windows-gray);
+}
+
+.window-controls {
+  display: flex;
+  gap: 2px;
+}
+
+.window-control-button {
+  background: var(--windows-gray);
+  border: 1px outset var(--windows-gray);
+  width: 16px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: bold;
+  font-family: inherit;
+}
+
+.window-control-button:hover {
+  background: var(--windows-light-gray);
+}
+
+.window-control-button:active {
+  border: 1px inset var(--windows-gray);
+}
+
+.close-button-header {
+  color: black;
+}
+
+.close-button-header:hover {
+  background: #ff0000;
+  color: white;
+}
+
+.taskbar-item {
+  background: var(--windows-gray);
+  border: 2px inset var(--windows-gray);
+  padding: 2px 8px;
+  cursor: pointer;
+  font-size: 11px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.taskbar-item:hover {
+  background: var(--windows-light-gray);
+}
+
+.taskbar-item:active {
+  border: 2px outset var(--windows-gray);
 }
 
 .animate-infinite-scroll {
@@ -63,4 +341,622 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   transform-origin: bottom;
+}
+
+/* Pixelated Background Elements */
+.background-elements {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cloud {
+  position: absolute;
+  background: white;
+  border-radius: 0;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.cloud::before,
+.cloud::after {
+  content: '';
+  position: absolute;
+  background: white;
+}
+
+.cloud-1 {
+  width: 60px;
+  height: 20px;
+  top: 10%;
+  left: 10%;
+  animation: float-cloud 20s linear infinite;
+}
+
+.cloud-1::before {
+  width: 30px;
+  height: 30px;
+  top: -15px;
+  left: 10px;
+}
+
+.cloud-1::after {
+  width: 40px;
+  height: 25px;
+  top: -10px;
+  right: 10px;
+}
+
+.cloud-2 {
+  width: 80px;
+  height: 25px;
+  top: 15%;
+  right: 20%;
+  animation: float-cloud 25s linear infinite reverse;
+}
+
+.cloud-2::before {
+  width: 35px;
+  height: 35px;
+  top: -18px;
+  left: 15px;
+}
+
+.cloud-2::after {
+  width: 45px;
+  height: 30px;
+  top: -12px;
+  right: 15px;
+}
+
+.cloud-3 {
+  width: 50px;
+  height: 18px;
+  top: 8%;
+  left: 60%;
+  animation: float-cloud 30s linear infinite;
+}
+
+.cloud-3::before {
+  width: 25px;
+  height: 25px;
+  top: -12px;
+  left: 8px;
+}
+
+.cloud-3::after {
+  width: 30px;
+  height: 20px;
+  top: -8px;
+  right: 8px;
+}
+
+.cloud-4 {
+  width: 70px;
+  height: 22px;
+  top: 5%;
+  left: 40%;
+  animation: float-cloud 35s linear infinite;
+}
+
+.cloud-4::before {
+  width: 32px;
+  height: 32px;
+  top: -16px;
+  left: 12px;
+}
+
+.cloud-4::after {
+  width: 38px;
+  height: 28px;
+  top: -14px;
+  right: 12px;
+}
+
+.cloud-5 {
+  width: 45px;
+  height: 16px;
+  top: 20%;
+  left: 85%;
+  animation: float-cloud 22s linear infinite;
+}
+
+.cloud-5::before {
+  width: 22px;
+  height: 22px;
+  top: -11px;
+  left: 6px;
+}
+
+.cloud-5::after {
+  width: 28px;
+  height: 18px;
+  top: -7px;
+  right: 6px;
+}
+
+.cloud-6 {
+  width: 55px;
+  height: 19px;
+  top: 12%;
+  right: 5%;
+  animation: float-cloud 28s linear infinite reverse;
+}
+
+.cloud-6::before {
+  width: 28px;
+  height: 28px;
+  top: -14px;
+  left: 9px;
+}
+
+.cloud-6::after {
+  width: 32px;
+  height: 22px;
+  top: -9px;
+  right: 9px;
+}
+
+@keyframes float-cloud {
+  0% {
+    transform: translateX(-100px);
+  }
+  100% {
+    transform: translateX(calc(100vw + 100px));
+  }
+}
+
+.tree {
+  position: absolute;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.tree-trunk {
+  background: #8b4513;
+  width: 8px;
+  height: 40px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tree-leaves {
+  background: #228b22;
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tree-leaves::before,
+.tree-leaves::after {
+  content: '';
+  position: absolute;
+  background: #228b22;
+}
+
+.tree-leaves::before {
+  width: 16px;
+  height: 16px;
+  top: -8px;
+  left: 4px;
+}
+
+.tree-leaves::after {
+  width: 20px;
+  height: 20px;
+  top: -12px;
+  left: 2px;
+}
+
+.tree-1 {
+  bottom: 25%;
+  left: 20%;
+  transform: scale(1.2);
+}
+
+.tree-2 {
+  bottom: 20%;
+  right: 15%;
+  transform: scale(0.8);
+}
+
+.tree-3 {
+  bottom: 30%;
+  left: 70%;
+  transform: scale(1.0);
+}
+
+.tree-4 {
+  bottom: 22%;
+  left: 45%;
+  transform: scale(0.6);
+}
+
+.tree-5 {
+  bottom: 28%;
+  right: 35%;
+  transform: scale(0.9);
+}
+
+.tree-6 {
+  bottom: 18%;
+  left: 12%;
+  transform: scale(1.1);
+}
+
+.tree-7 {
+  bottom: 35%;
+  right: 8%;
+  transform: scale(0.7);
+}
+
+.tree-8 {
+  bottom: 26%;
+  left: 82%;
+  transform: scale(0.8);
+}
+
+.flower {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.flower-red {
+  background: #ff4444;
+  bottom: 35%;
+  left: 25%;
+}
+
+.flower-yellow {
+  background: #ffff44;
+  bottom: 40%;
+  left: 65%;
+}
+
+.flower-pink {
+  background: #ff69b4;
+  bottom: 32%;
+  right: 30%;
+}
+
+.flower-blue {
+  background: #4444ff;
+  bottom: 38%;
+  left: 50%;
+}
+
+.flower-white {
+  background: #ffffff;
+  bottom: 36%;
+  right: 45%;
+}
+
+.flower-orange {
+  background: #ff8c00;
+  bottom: 34%;
+  left: 35%;
+}
+
+.flower-purple {
+  background: #9932cc;
+  bottom: 41%;
+  right: 20%;
+}
+
+.flower-cyan {
+  background: #00ffff;
+  bottom: 33%;
+  left: 78%;
+}
+
+.flower-lime {
+  background: #32cd32;
+  bottom: 39%;
+  left: 15%;
+}
+
+.flower-magenta {
+  background: #ff1493;
+  bottom: 37%;
+  right: 60%;
+}
+
+.flower-gold {
+  background: #ffd700;
+  bottom: 42%;
+  left: 88%;
+}
+
+.flower-coral {
+  background: #ff7f50;
+  bottom: 31%;
+  right: 12%;
+}
+
+.flower::before {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 6px;
+  background: #228b22;
+  bottom: -6px;
+  left: 3px;
+}
+
+/* TV Static Shutdown Animation */
+.tv-shutdown-overlay {
+  background: #000;
+  animation: tv-static-shutdown 5s ease-in-out forwards;
+}
+
+.static-noise {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.1) 2px,
+      rgba(255,255,255,0.1) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.05) 2px,
+      rgba(255,255,255,0.05) 4px
+    );
+  animation: static-flicker 0.1s linear infinite, static-fade 5s ease-out forwards;
+  opacity: 0;
+}
+
+.tv-scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0,0,0,0.1) 1px,
+    rgba(0,0,0,0.1) 2px
+  );
+  animation: scanline-flicker 0.05s linear infinite, scanline-fade 5s ease-out forwards;
+  opacity: 0;
+}
+
+.tv-shutdown-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255,255,255,0.8);
+  transform: translateY(-50%) scaleX(1);
+  animation: tv-shutdown-collapse 5s ease-in-out forwards;
+  opacity: 0;
+}
+
+@keyframes tv-static-shutdown {
+  0% {
+    background: transparent;
+    opacity: 0;
+  }
+  20% {
+    background: transparent;
+    opacity: 1;
+  }
+  50% {
+    background: 
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05) 1px, transparent 1px),
+      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.3) 50%, transparent 60%);
+    opacity: 1;
+  }
+  70% {
+    background: 
+      radial-gradient(circle at 40% 60%, rgba(255,255,255,0.08) 1px, transparent 1px),
+      radial-gradient(circle at 60% 40%, rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(180deg, transparent 45%, rgba(0,0,0,0.6) 50%, transparent 55%);
+    opacity: 1;
+  }
+  85% {
+    background: linear-gradient(180deg, transparent 48%, rgba(0,0,0,0.9) 50%, transparent 52%);
+    opacity: 1;
+  }
+  95% {
+    background: linear-gradient(180deg, transparent 49%, #000 50%, transparent 51%);
+    opacity: 1;
+  }
+  100% {
+    background: #000;
+    opacity: 1;
+  }
+}
+
+@keyframes static-flicker {
+  0% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(-1px) translateY(1px); }
+  50% { transform: translateX(1px) translateY(-1px); }
+  75% { transform: translateX(-1px) translateY(-1px); }
+  100% { transform: translateX(1px) translateY(1px); }
+}
+
+@keyframes static-fade {
+  0% { opacity: 0; }
+  30% { opacity: 0.7; }
+  60% { opacity: 0.4; }
+  80% { opacity: 0.1; }
+  100% { opacity: 0; }
+}
+
+@keyframes scanline-flicker {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-2px); }
+}
+
+@keyframes scanline-fade {
+  0% { opacity: 0; }
+  25% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+  70% { opacity: 0.2; }
+  100% { opacity: 0; }
+}
+
+@keyframes tv-shutdown-collapse {
+  0% { 
+    opacity: 0;
+    transform: translateY(-50%) scaleX(1) scaleY(1);
+    height: 100vh;
+  }
+  70% { 
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1) scaleY(1);
+    height: 100vh;
+  }
+  85% { 
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1) scaleY(0.1);
+    height: 4px;
+  }
+  95% { 
+    opacity: 1;
+    transform: translateY(-50%) scaleX(0.5) scaleY(0.05);
+    height: 2px;
+  }
+  100% { 
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0) scaleY(0);
+    height: 0px;
+  }
+}
+
+/* TV Shutdown effect for all elements */
+.tv-shutdown-active .background-elements,
+.tv-shutdown-active .desktop-icon,
+.tv-shutdown-active .browser-window,
+.tv-shutdown-active .bio-window,
+.tv-shutdown-active .contact-window,
+.tv-shutdown-active .taskbar {
+  animation: tv-power-down 4s ease-in-out forwards;
+}
+
+@keyframes tv-power-down {
+  0% {
+    opacity: 1;
+    filter: brightness(1) contrast(1) saturate(1);
+    transform: scale(1);
+  }
+  15% {
+    opacity: 0.9;
+    filter: brightness(1.1) contrast(1.2) saturate(0.8);
+    transform: scale(1) translateX(1px);
+  }
+  30% {
+    opacity: 0.7;
+    filter: brightness(0.8) contrast(1.5) saturate(0.5);
+    transform: scale(1) translateX(-1px);
+  }
+  45% {
+    opacity: 0.5;
+    filter: brightness(0.6) contrast(1.8) saturate(0.2);
+    transform: scale(1) translateX(1px);
+  }
+  60% {
+    opacity: 0.3;
+    filter: brightness(0.4) contrast(1.5) saturate(0);
+    transform: scale(1) translateX(0px);
+  }
+  75% {
+    opacity: 0.15;
+    filter: brightness(0.2) contrast(1) saturate(0);
+    transform: scale(1) translateY(-1px);
+  }
+  85% {
+    opacity: 0.05;
+    filter: brightness(0.1) contrast(1) saturate(0);
+    transform: scale(1) translateY(1px);
+  }
+  95% {
+    opacity: 0.01;
+    filter: brightness(0.05) contrast(1) saturate(0);
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    filter: brightness(0) contrast(1) saturate(0);
+    transform: scale(1);
+  }
+}
+
+/* Loading Screen Styles */
+.reboot-screen {
+  background: #000;
+}
+
+.loading-container {
+  text-align: center;
+  color: #fff;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.loading-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  animation: loading-bounce 1.4s ease-in-out infinite both;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.loading-text {
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  color: #ccc;
+  margin: 0;
+}
+
+@keyframes loading-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
 }
