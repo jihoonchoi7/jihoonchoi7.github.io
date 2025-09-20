@@ -33,11 +33,13 @@ export function WindowsDesktop() {
     };
 
     setNotes(prev => [...prev, newNote]);
+    console.log('Created note:', newNote);
 
-    // Remove note after animation completes
+    // Remove note after animation completes - use appropriate duration for each note type
+    const animationDuration = type === 'whole' ? 5000 : type === 'half' ? 4000 : 3000;
     setTimeout(() => {
       setNotes(prev => prev.filter(note => note.id !== newNote.id));
-    }, 3000); // 3 seconds for the fall animation
+    }, animationDuration);
   }, []);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -67,17 +69,17 @@ export function WindowsDesktop() {
         Jihoon Choi
       </h1>
       
-      <div className="max-w-2xl text-center leading-relaxed space-y-4 text-sm">
+      <div className="max-w-2xl text-left leading-relaxed space-y-4 text-sm">
         <p>
-          i currently work at greptile.com as sales. i want software engineers to worry less about their PRs and just ship faster.
+          i currently work at <a href="https://greptile.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">greptile.com</a> as sales.
         </p>
         
         <p>
-          i majored in classical piano and business in college at smu.edu.
+          i majored in classical piano and business in college at <a href="https://www.smu.edu" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">smu</a>.
         </p>
         
         <p>
-          some of my favorite composers are tchaikovsky, beethoven, scarlatti, chopin & of course bach. some others i admire are crumb, corigliano, glass & trifonov.
+          some of my favorite composers are tchaikovsky, beethoven, scarlatti, chopin & bach. some others i admire are crumb, corigliano, glass & trifonov.
         </p>
         
         <p>
@@ -93,7 +95,6 @@ export function WindowsDesktop() {
           style={{
             left: `${note.x}px`,
             top: `${note.y}px`,
-            animation: `fall-${note.type} 3s ease-in forwards`,
             zIndex: 1000,
           }}
         >
@@ -143,9 +144,15 @@ export function WindowsDesktop() {
           }
         }
         
-        .musical-note-whole { animation-duration: 5s; }
-        .musical-note-half { animation-duration: 4s; }
-        .musical-note-quarter { animation-duration: 3s; }
+        .musical-note-whole { 
+          animation: fall-whole 5s ease-in forwards;
+        }
+        .musical-note-half { 
+          animation: fall-half 4s ease-in forwards;
+        }
+        .musical-note-quarter { 
+          animation: fall-quarter 3s ease-in forwards;
+        }
       `}</style>
     </div>
   );
