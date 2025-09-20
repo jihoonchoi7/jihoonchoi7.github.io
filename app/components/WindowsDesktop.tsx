@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 
 interface Note {
   id: string;
@@ -42,7 +42,7 @@ export function WindowsDesktop() {
     }, animationDuration);
   }, []);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleMouseDown = useCallback(() => {
     setMouseDownTime(Date.now());
   }, []);
 
