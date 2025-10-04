@@ -1,5 +1,5 @@
-import { WindowsDesktop } from "./components/WindowsDesktop";
+import { SpiralHero } from "./components/SpiralHero";
 
 export default function Home() {
-  return <WindowsDesktop />;
+  return <SpiralHero />;
 }
