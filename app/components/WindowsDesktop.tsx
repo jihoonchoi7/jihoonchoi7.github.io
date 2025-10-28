@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 interface FallingNote {
   id: number;
@@ -11,6 +11,14 @@ interface FallingNote {
 export function WindowsDesktop() {
   const [notes, setNotes] = useState<FallingNote[]>([]);
   const noteIdCounter = useRef(0);
+  const timeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
+
+  useEffect(() => {
+    return () => {
+      timeoutsRef.current.forEach(clearTimeout);
+      timeoutsRef.current.clear();
+    };
+  }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const newNote: FallingNote = {
@@ -22,9 +30,11 @@ export function WindowsDesktop() {
     setNotes((prev) => [...prev, newNote]);
 
     // Remove note after animation completes
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       setNotes((prev) => prev.filter((note) => note.id !== newNote.id));
+      timeoutsRef.current.delete(timeoutId);
     }, 4000);
+    timeoutsRef.current.add(timeoutId);
   };
 
   return (
