@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { PianoLizard } from './PianoLizard';
 
 interface FallingNote {
   id: number;
@@ -104,6 +105,9 @@ export function WindowsDesktop() {
           animation: fall 4s ease-in forwards;
         }
       `}</style>
+      
+      {/* Piano Lizard Animation */}
+      <PianoLizard />
     </div>
   );
 }
