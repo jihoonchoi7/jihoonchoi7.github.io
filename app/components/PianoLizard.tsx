@@ -20,6 +20,8 @@ export function PianoLizard() {
   }, [stage]);
 
   useEffect(() => {
+    const timeoutsRef: Set<NodeJS.Timeout> = new Set();
+    
     // Random initial delay of 6-7 seconds
     const initialDelay = 6000 + Math.random() * 1000;
     
@@ -29,51 +31,65 @@ export function PianoLizard() {
       setStage('piano');
       
       // Lizard appears 1-2 seconds after piano
-      setTimeout(() => {
+      const t1 = setTimeout(() => {
         setStage('lizard');
         
         // Lizard approaches piano after 2 seconds
-        setTimeout(() => {
+        const t2 = setTimeout(() => {
           setStage('approaching');
           
           // Show excitement after approaching (2s for approach animation)
-          setTimeout(() => {
+          const t3 = setTimeout(() => {
             setStage('excited');
             
             // Start playing after excitement
-            setTimeout(() => {
+            const t4 = setTimeout(() => {
               setStage('playing');
               
               // Hide everything after playing for 8 seconds
-              setTimeout(() => {
+              const t5 = setTimeout(() => {
                 setIsVisible(false);
                 setStage('hidden');
                 
                 // Reset and start over after 3 seconds
-                setTimeout(() => {
+                const t6 = setTimeout(() => {
                   setFromLeft(Math.random() > 0.5);
                   setIsVisible(true);
                   setStage('piano');
                   
-                  setTimeout(() => {
+                  const t7 = setTimeout(() => {
                     setStage('lizard');
-                    setTimeout(() => {
+                    const t8 = setTimeout(() => {
                       setStage('approaching');
-                      setTimeout(() => {
+                      const t9 = setTimeout(() => {
                         setStage('excited');
-                        setTimeout(() => setStage('playing'), 1000);
+                        const t10 = setTimeout(() => setStage('playing'), 1000);
+                        timeoutsRef.add(t10);
                       }, 2000);
+                      timeoutsRef.add(t9);
                     }, 2000);
+                    timeoutsRef.add(t8);
                   }, 1000 + Math.random() * 1000);
+                  timeoutsRef.add(t7);
                 }, 3000);
+                timeoutsRef.add(t6);
               }, 8000);
+              timeoutsRef.add(t5);
             }, 1000);
+            timeoutsRef.add(t4);
           }, 2000);
+          timeoutsRef.add(t3);
         }, 2000);
+        timeoutsRef.add(t2);
       }, 1000 + Math.random() * 1000);
+      timeoutsRef.add(t1);
     }, initialDelay);
+    timeoutsRef.add(timer);
 
-    return () => clearTimeout(timer);
+    return () => {
+      timeoutsRef.forEach(clearTimeout);
+      timeoutsRef.clear();
+    };
   }, []);
 
   if (!isVisible) return null;
