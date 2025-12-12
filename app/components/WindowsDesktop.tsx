@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { Navigation } from './Navigation';
 
 interface FallingNote {
   id: number;
@@ -21,6 +22,12 @@ export function WindowsDesktop() {
   }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Don't create notes when clicking on navigation or links
+    const target = e.target as HTMLElement;
+    if (target.closest('a') || target.tagName === 'A') {
+      return;
+    }
+
     const newNote: FallingNote = {
       id: noteIdCounter.current++,
       x: e.clientX,
@@ -43,6 +50,9 @@ export function WindowsDesktop() {
       style={{ fontFamily: 'Times New Roman, serif' }}
       onClick={handleClick}
     >
+      {/* Navigation */}
+      <Navigation />
+
       <h1 className="text-4xl font-normal mb-5">
         Jihoon Choi
       </h1>
