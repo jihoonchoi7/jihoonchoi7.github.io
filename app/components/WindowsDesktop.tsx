@@ -1,71 +1,196 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { NoteGlyph } from './NoteGlyph';
+import {
+  NoteType,
+  NOTE_LIFETIME_MS,
+  HOLD_MAX_MS,
+  noteTypeForDuration,
+  noteLabelForDuration,
+} from '../lib/notes';
 
 interface FallingNote {
   id: number;
   x: number;
   y: number;
+  type: NoteType;
+}
+
+interface Holding {
+  x: number;
+  y: number;
+  startedAt: number;
+  elapsed: number;
 }
 
 export function WindowsDesktop() {
   const [notes, setNotes] = useState<FallingNote[]>([]);
+  const [holding, setHolding] = useState<Holding | null>(null);
   const noteIdCounter = useRef(0);
-  const timeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
+  const timeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
       timeoutsRef.current.forEach(clearTimeout);
       timeoutsRef.current.clear();
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const newNote: FallingNote = {
-      id: noteIdCounter.current++,
-      x: e.clientX,
-      y: e.clientY,
+  const clearHolding = useCallback(() => {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    setHolding(null);
+  }, []);
+
+  useEffect(() => {
+    if (!holding) return;
+
+    const tick = () => {
+      const elapsed = performance.now() - holding.startedAt;
+      setHolding({ ...holding, elapsed });
+      if (elapsed >= HOLD_MAX_MS + 200) {
+        return;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+
+    const handleUp = () => {
+      const elapsedFinal = performance.now() - holding.startedAt;
+      const type = noteTypeForDuration(elapsedFinal);
+      const newNote: FallingNote = {
+        id: noteIdCounter.current++,
+        x: holding.x,
+        y: holding.y,
+        type,
+      };
+      setNotes((prev) => [...prev, newNote]);
+      const timeoutId = setTimeout(() => {
+        setNotes((prev) => prev.filter((n) => n.id !== newNote.id));
+        timeoutsRef.current.delete(timeoutId);
+      }, NOTE_LIFETIME_MS);
+      timeoutsRef.current.add(timeoutId);
+      clearHolding();
     };
 
-    setNotes((prev) => [...prev, newNote]);
+    const handleCancel = () => clearHolding();
 
-    // Remove note after animation completes
-    const timeoutId = setTimeout(() => {
-      setNotes((prev) => prev.filter((note) => note.id !== newNote.id));
-      timeoutsRef.current.delete(timeoutId);
-    }, 4000);
-    timeoutsRef.current.add(timeoutId);
+    window.addEventListener('pointerup', handleUp, { once: true });
+    window.addEventListener('pointercancel', handleCancel, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerup', handleUp);
+      window.removeEventListener('pointercancel', handleCancel);
+    };
+  }, [holding?.startedAt, clearHolding]);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    setHolding({
+      x: e.clientX,
+      y: e.clientY,
+      startedAt: performance.now(),
+      elapsed: 0,
+    });
   };
 
+  const ringFraction = holding
+    ? Math.min(holding.elapsed / HOLD_MAX_MS, 1)
+    : 0;
+  const currentType: NoteType = holding
+    ? noteTypeForDuration(holding.elapsed)
+    : 'eighth';
+  const currentLabel = holding ? noteLabelForDuration(holding.elapsed) : '';
+  const previewOpacity = 0.35 + ringFraction * 0.5;
+
   return (
-    <div 
-      className="w-full h-screen bg-white flex flex-col justify-center items-center text-black relative overflow-hidden" 
+    <div
+      className="w-full h-screen bg-white flex flex-col justify-center items-center text-black relative overflow-hidden"
       style={{ fontFamily: 'Times New Roman, serif' }}
-      onClick={handleClick}
+      onPointerDown={handlePointerDown}
     >
-      <h1 className="text-4xl font-normal mb-5">
-        Jihoon Choi
-      </h1>
-      
+      <h1 className="text-4xl font-normal mb-5">Jihoon Choi</h1>
+
       <div className="max-w-2xl text-left leading-relaxed space-y-4 text-sm">
         <p>
-          i currently work at <a href="https://greptile.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">greptile.com</a> as sales.
+          i currently work at{' '}
+          <a
+            href="https://greptile.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline"
+          >
+            greptile.com
+          </a>{' '}
+          as sales.
         </p>
-        
+
         <p>
-          i majored in classical piano and business in college at <a href="https://www.smu.edu" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">smu</a>.
+          i majored in classical piano and business in college at{' '}
+          <a
+            href="https://www.smu.edu"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline"
+          >
+            smu
+          </a>
+          .
         </p>
-        
+
         <p>
-          some of my favorite composers are tchaikovsky, beethoven, scarlatti, chopin & bach. some others i admire are crumb, corigliano, glass & trifonov.
+          some of my favorite composers are tchaikovsky, beethoven, scarlatti,
+          chopin &amp; bach. some others i admire are crumb, corigliano, glass &amp;
+          trifonov.
         </p>
-        
+
         <p>
-          in my spare time, i love spending time with my wife, playing golf & the piano.
+          in my spare time, i love spending time with my wife, playing golf &amp;
+          the piano.
         </p>
       </div>
 
-      {/* Falling Notes */}
+      {holding && (
+        <div
+          className="absolute pointer-events-none z-20 flex flex-col items-center gap-2"
+          style={{
+            left: `${holding.x}px`,
+            top: `${holding.y}px`,
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <div
+            style={{
+              opacity: previewOpacity,
+              transition: 'opacity 120ms ease-out',
+              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.08))',
+            }}
+          >
+            <NoteGlyph type={currentType} size={30} />
+          </div>
+          <div
+            className="relative h-[3px] w-14 overflow-hidden rounded-full bg-black/10"
+            style={{ transition: 'width 120ms ease-out' }}
+          >
+            <div
+              className="absolute left-0 top-0 h-full rounded-full bg-black"
+              style={{ width: `${ringFraction * 100}%` }}
+            />
+          </div>
+          <div
+            className="text-[10px] font-medium tracking-wide text-black/60"
+            style={{ fontFamily: 'Times New Roman, serif' }}
+          >
+            {currentLabel}
+          </div>
+        </div>
+      )}
+
       {notes.map((note) => (
         <div
           key={note.id}
@@ -73,11 +198,12 @@ export function WindowsDesktop() {
           style={{
             left: `${note.x - 24}px`,
             top: `${note.y - 24}px`,
-            fontSize: '48px',
+            width: '48px',
+            height: '48px',
             color: 'black',
           }}
         >
-          ♩
+          <NoteGlyph type={note.type} size={48} />
         </div>
       ))}
 
