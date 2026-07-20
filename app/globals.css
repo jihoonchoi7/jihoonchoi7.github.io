@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Bravura music font (SIL Open Font License 1.1) — see app/fonts/Bravura-OFL.txt */
+@font-face {
+  font-family: 'Bravura';
+  src: url('/fonts/Bravura.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
 :root {
   --windows-blue: #008080;
   --windows-gray: #c0c0c0;
