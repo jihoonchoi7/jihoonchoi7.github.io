@@ -52,30 +52,34 @@ export function WindowsDesktop() {
 
     const tick = () => {
       const elapsed = performance.now() - holding.startedAt;
-      setHolding({ ...holding, elapsed });
-      if (elapsed >= HOLD_MAX_MS + 200) {
-        return;
+      setHolding((prev) =>
+        prev ? { ...prev, elapsed } : prev
+      );
+      if (elapsed < HOLD_MAX_MS) {
+        rafRef.current = requestAnimationFrame(tick);
       }
-      rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
 
     const handleUp = () => {
-      const elapsedFinal = performance.now() - holding.startedAt;
-      const type = noteTypeForDuration(elapsedFinal);
-      const newNote: FallingNote = {
-        id: noteIdCounter.current++,
-        x: holding.x,
-        y: holding.y,
-        type,
-      };
-      setNotes((prev) => [...prev, newNote]);
-      const timeoutId = setTimeout(() => {
-        setNotes((prev) => prev.filter((n) => n.id !== newNote.id));
-        timeoutsRef.current.delete(timeoutId);
-      }, NOTE_LIFETIME_MS);
-      timeoutsRef.current.add(timeoutId);
-      clearHolding();
+      setHolding((prev) => {
+        if (!prev) return null;
+        const elapsedFinal = performance.now() - prev.startedAt;
+        const type = noteTypeForDuration(elapsedFinal);
+        const newNote: FallingNote = {
+          id: noteIdCounter.current++,
+          x: prev.x,
+          y: prev.y,
+          type,
+        };
+        setNotes((p) => [...p, newNote]);
+        const timeoutId = setTimeout(() => {
+          setNotes((p) => p.filter((n) => n.id !== newNote.id));
+          timeoutsRef.current.delete(timeoutId);
+        }, NOTE_LIFETIME_MS);
+        timeoutsRef.current.add(timeoutId);
+        return null;
+      });
     };
 
     const handleCancel = () => clearHolding();
@@ -182,10 +186,7 @@ export function WindowsDesktop() {
           >
             <div
               className="absolute left-0 top-0 h-full rounded-full bg-black"
-              style={{
-                width: `${ringFraction * 100}%`,
-                transition: 'width 120ms ease-out',
-              }}
+              style={{ width: `${ringFraction * 100}%` }}
             />
           </div>
           <div
