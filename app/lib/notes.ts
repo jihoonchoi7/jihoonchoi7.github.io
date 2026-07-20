@@ -27,7 +27,3 @@ export function noteLabelForDuration(ms: number): string {
   for (const t of NOTE_THRESHOLDS) if (ms >= t.ms) return t.label;
   return 'Eighth';
 }
-
-export function hintForType(type: NoteType): string {
-  return NOTE_THRESHOLDS.find((t) => t.type === type)?.hint ?? '';
-}

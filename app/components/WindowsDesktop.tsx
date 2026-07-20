@@ -84,6 +84,10 @@ export function WindowsDesktop() {
     window.addEventListener('pointercancel', handleCancel, { once: true });
 
     return () => {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
       window.removeEventListener('pointerup', handleUp);
       window.removeEventListener('pointercancel', handleCancel);
     };
@@ -175,11 +179,13 @@ export function WindowsDesktop() {
           </div>
           <div
             className="relative h-[3px] w-14 overflow-hidden rounded-full bg-black/10"
-            style={{ transition: 'width 120ms ease-out' }}
           >
             <div
               className="absolute left-0 top-0 h-full rounded-full bg-black"
-              style={{ width: `${ringFraction * 100}%` }}
+              style={{
+                width: `${ringFraction * 100}%`,
+                transition: 'width 120ms ease-out',
+              }}
             />
           </div>
           <div
